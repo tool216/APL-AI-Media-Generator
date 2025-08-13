@@ -1,1 +1,522 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APL AI - Generate Videos & Audio from Text</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --accent: #fd79a8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .tools {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tool-card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tool-icon {
+            font-size: 1.5rem;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 150px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: none;
+        }
+        
+        .output-container {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .output-container h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        #videoOutput, #audioOutput {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .download-btn {
+            margin-top: 1rem;
+            background: var(--accent);
+        }
+        
+        .ad-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem 0;
+            text-align: center;
+            border: 1px dashed #ddd;
+        }
+        
+        .ad-container h3 {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .tools {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+            }
+            
+            nav ul li {
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">APL<span>AI</span></div>
+        <nav>
+            <ul>
+                <li><a href="#video-tool">Video Tool</a></li>
+                <li><a href="#audio-tool">Audio Tool</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <section class="hero">
+            <h1>Transform Text into Engaging Videos & Audio</h1>
+            <p>APL AI empowers you to create professional videos and high-quality audio from simple text inputs. Perfect for content creators, marketers, and educators.</p>
+            
+            <div class="ad-container">
+                <h3>Sponsored Ad</h3>
+                <div id="headerAd">
+                    <!-- Your ad content will be loaded here -->
+                    <a href="#" target="_blank">
+                        <img src="https://via.placeholder.com/728x90?text=Your+Ad+Here" alt="Advertisement" style="max-width: 100%; border-radius: 4px;">
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <div class="tools">
+            <!-- Video Generation Tool -->
+            <div class="tool-card" id="video-tool">
+                <h2><span class="tool-icon">🎬</span> Video Generator</h2>
+                <p>Enter your text below to generate a video with AI-powered visuals and voiceover.</p>
+                
+                <textarea id="videoText" placeholder="Enter your text here to generate a video..."></textarea>
+                
+                <div class="options">
+                    <label for="videoStyle">Video Style:</label>
+                    <select id="videoStyle" class="btn btn-secondary" style="width: 100%; margin: 0.5rem 0 1rem;">
+                        <option value="professional">Professional</option>
+                        <option value="animated">Animated</option>
+                        <option value="minimal">Minimal</option>
+                        <option value="cinematic">Cinematic</option>
+                    </select>
+                </div>
+                
+                <button id="generateVideoBtn" class="btn">Generate Video</button>
+                
+                <div class="output-container" id="videoOutputContainer">
+                    <h3>Your Generated Video:</h3>
+                    <video id="videoOutput" controls></video>
+                    <button id="downloadVideoBtn" class="btn download-btn">Download Video</button>
+                </div>
+            </div>
+            
+            <!-- Audio Generation Tool -->
+            <div class="tool-card" id="audio-tool">
+                <h2><span class="tool-icon">🎧</span> Audio Generator</h2>
+                <p>Convert your text to natural-sounding audio with multiple voice options.</p>
+                
+                <textarea id="audioText" placeholder="Enter your text here to generate audio..."></textarea>
+                
+                <div class="options">
+                    <label for="voiceOption">Voice Option:</label>
+                    <select id="voiceOption" class="btn btn-secondary" style="width: 100%; margin: 0.5rem 0 1rem;">
+                        <option value="male1">Male Voice 1</option>
+                        <option value="female1">Female Voice 1</option>
+                        <option value="male2">Male Voice 2</option>
+                        <option value="female2">Female Voice 2</option>
+                    </select>
+                </div>
+                
+                <button id="generateAudioBtn" class="btn">Generate Audio</button>
+                
+                <div class="output-container" id="audioOutputContainer">
+                    <h3>Your Generated Audio:</h3>
+                    <audio id="audioOutput" controls></audio>
+                    <button id="downloadAudioBtn" class="btn download-btn">Download Audio</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ad-container">
+            <h3>Recommended For You</h3>
+            <div id="middleAd">
+                <!-- Your ad content will be loaded here -->
+                <a href="#" target="_blank">
+                    <img src="https://via.placeholder.com/728x90?text=Your+Ad+Here" alt="Advertisement" style="max-width: 100%; border-radius: 4px;">
+                </a>
+            </div>
+        </div>
+        
+        <section id="about" style="margin: 3rem 0;">
+            <h2>About APL AI</h2>
+            <p>APL AI is an innovative platform that leverages artificial intelligence to transform simple text inputs into engaging videos and high-quality audio. Our mission is to make content creation accessible to everyone, regardless of technical skills.</p>
+            <p>The platform uses advanced text-to-speech and video generation algorithms to create professional-quality media in minutes.</p>
+        </section>
+        
+        <div class="ad-container">
+            <h3>Special Offer</h3>
+            <div id="footerAd">
+                <!-- Your ad content will be loaded here -->
+                <a href="#" target="_blank">
+                    <img src="https://via.placeholder.com/728x90?text=Your+Ad+Here" alt="Advertisement" style="max-width: 100%; border-radius: 4px;">
+                </a>
+            </div>
+        </div>
+        
+        <section id="contact" style="margin: 3rem 0;">
+            <h2>Contact Us</h2>
+            <p>Have questions or feedback? We'd love to hear from you!</p>
+            <p>Email: contact@aplai.com</p>
+            <p>Phone: +1 (555) 123-4567</p>
+        </section>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 APL AI. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #bbb;">Powered by advanced AI technology</p>
+    </footer>
+    
+    <script>
+        // Video Generation Functionality
+        document.getElementById('generateVideoBtn').addEventListener('click', function() {
+            const text = document.getElementById('videoText').value.trim();
+            const style = document.getElementById('videoStyle').value;
+            
+            if (!text) {
+                alert('Please enter some text to generate a video.');
+                return;
+            }
+            
+            // Show loading state
+            this.innerHTML = 'Generating... <span class="spinner">⏳</span>';
+            this.disabled = true;
+            
+            // Simulate API call (in a real app, you would call your backend)
+            setTimeout(() => {
+                // This is a simulation - in a real app, you would receive the video URL from your backend
+                const videoUrl = simulateVideoGeneration(text, style);
+                
+                const videoOutput = document.getElementById('videoOutput');
+                const videoContainer = document.getElementById('videoOutputContainer');
+                
+                videoOutput.src = videoUrl;
+                videoContainer.style.display = 'block';
+                
+                // Reset button
+                this.innerHTML = 'Generate Video';
+                this.disabled = false;
+                
+                // Scroll to the output
+                videoContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 3000);
+        });
+        
+        // Audio Generation Functionality
+        document.getElementById('generateAudioBtn').addEventListener('click', function() {
+            const text = document.getElementById('audioText').value.trim();
+            const voice = document.getElementById('voiceOption').value;
+            
+            if (!text) {
+                alert('Please enter some text to generate audio.');
+                return;
+            }
+            
+            // Show loading state
+            this.innerHTML = 'Generating... <span class="spinner">⏳</span>';
+            this.disabled = true;
+            
+            // Simulate API call (in a real app, you would call your backend)
+            setTimeout(() => {
+                // This is a simulation - in a real app, you would receive the audio URL from your backend
+                const audioUrl = simulateAudioGeneration(text, voice);
+                
+                const audioOutput = document.getElementById('audioOutput');
+                const audioContainer = document.getElementById('audioOutputContainer');
+                
+                audioOutput.src = audioUrl;
+                audioContainer.style.display = 'block';
+                
+                // Reset button
+                this.innerHTML = 'Generate Audio';
+                this.disabled = false;
+                
+                // Scroll to the output
+                audioContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        });
+        
+        // Download buttons
+        document.getElementById('downloadVideoBtn').addEventListener('click', function() {
+            const videoUrl = document.getElementById('videoOutput').src;
+            if (videoUrl) {
+                const a = document.createElement('a');
+                a.href = videoUrl;
+                a.download = 'apl-ai-video.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
+        
+        document.getElementById('downloadAudioBtn').addEventListener('click', function() {
+            const audioUrl = document.getElementById('audioOutput').src;
+            if (audioUrl) {
+                const a = document.createElement('a');
+                a.href = audioUrl;
+                a.download = 'apl-ai-audio.mp3';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
+        
+        // Simulation functions (replace with actual API calls in production)
+        function simulateVideoGeneration(text, style) {
+            // In a real app, this would call your backend API
+            console.log(`Generating video with style: ${style} and text: ${text}`);
+            
+            // Return a placeholder video URL
+            // Replace this with your actual video generation API response
+            return 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4';
+        }
+        
+        function simulateAudioGeneration(text, voice) {
+            // In a real app, this would call your backend API
+            console.log(`Generating audio with voice: ${voice} and text: ${text}`);
+            
+            // Return a placeholder audio URL
+            // Replace this with your actual audio generation API response
+            return 'https://sample-videos.com/video123/mp3/720/big_buck_bunny_720p_1mb.mp3';
+        }
+        
+        // Ad rotation simulation
+        function rotateAds() {
+            const ads = [
+                { 
+                    text: "Upgrade to APL AI Pro for unlimited generations!", 
+                    link: "#pro",
+                    image: "https://via.placeholder.com/728x90?text=Upgrade+to+APL+AI+Pro+Today"
+                },
+                { 
+                    text: "Check out our new voice options!", 
+                    link: "#voices",
+                    image: "https://via.placeholder.com/728x90?text=New+Voice+Options+Available"
+                },
+                { 
+                    text: "Special discount for first-time users!", 
+                    link: "#discount",
+                    image: "https://via.placeholder.com/728x90?text=Special+Discount+for+New+Users"
+                }
+            ];
+            
+            const adContainers = ['headerAd', 'middleAd', 'footerAd'];
+            
+            adContainers.forEach(containerId => {
+                const randomAd = ads[Math.floor(Math.random() * ads.length)];
+                const container = document.getElementById(containerId);
+                
+                if (container) {
+                    container.innerHTML = `
+                        <a href="${randomAd.link}" target="_blank">
+                            <img src="${randomAd.image}" alt="${randomAd.text}" style="max-width: 100%; border-radius: 4px;">
+                        </a>
+                    `;
+                }
+            });
+        }
+        
+        // Rotate ads every 30 seconds
+        rotateAds();
+        setInterval(rotateAds, 30000);
+    </script>
+</body>
+</html>
