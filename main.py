@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import os
 import uuid
 from moviepy.editor import TextClip, CompositeVideoClip, AudioFileClip
-import tempfile
+import main.py
 
 app = Flask(__name__)
 
@@ -17,7 +17,7 @@ def generate_video():
     
     try:
         # Create a temporary file for the video
-        output_path = os.path.join(tempfile.gettempdir(), f"{uuid.uuid4()}.mp4")
+        output_path = os.path.join(main.py.gettempdir(), f"{uuid.uuid4()}.mp4")
         
         # Create text clip (in a real app, you'd have more sophisticated generation)
         txt_clip = TextClip(text, fontsize=24, color='white', size=(640, 480))
