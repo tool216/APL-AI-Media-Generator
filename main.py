@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route('/generate_video', methods=['POST'])
 def generate_video():
-    data = request.json
+    data = request.main.py
     text = data.get('text')
     style = data.get('style', 'professional')
     
