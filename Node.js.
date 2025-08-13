@@ -1,0 +1,92 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// Mock database for ads
+const ads = [
+    {
+        id: 1,
+        title: "Upgrade to Pro",
+        content: "Get unlimited generations with APL AI Pro!",
+        image: "pro_ad.jpg",
+        link: "/upgrade"
+    },
+    {
+        id: 2,
+        title: "New Voices Available",
+        content: "Check out our latest voice options!",
+        image: "voices_ad.jpg",
+        link: "/voices"
+    },
+    {
+        id: 3,
+        title: "Special Discount",
+        content: "50% off for first-time users!",
+        image: "discount_ad.jpg",
+        link: "/discount"
+    }
+];
+
+// API Routes
+app.get('/api/ads', (req, res) => {
+    // Return random ads
+    const shuffled = [...ads].sort(() => 0.5 - Math.random());
+    res.json(shuffled.slice(0, 3)); // Return 3 random ads
+});
+
+app.post('/api/generate/video', (req, res) => {
+    const { text, style } = req.body;
+    
+    if (!text) {
+        return res.status(400).json({ error: 'Text is required' });
+    }
+    
+    // In a real implementation, you would:
+    // 1. Call your video generation service
+    // 2. Process the text and style
+    // 3. Return the generated video URL
+    
+    // Mock response
+    setTimeout(() => {
+        res.json({
+            success: true,
+            videoUrl: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+            duration: '00:01:23',
+            size: '1.2MB'
+        });
+    }, 3000);
+});
+
+app.post('/api/generate/audio', (req, res) => {
+    const { text, voice } = req.body;
+    
+    if (!text) {
+        return res.status(400).json({ error: 'Text is required' });
+    }
+    
+    // In a real implementation, you would:
+    // 1. Call your text-to-speech service
+    // 2. Process the text with the selected voice
+    // 3. Return the generated audio URL
+    
+    // Mock response
+    setTimeout(() => {
+        res.json({
+            success: true,
+            audioUrl: 'https://sample-videos.com/video123/mp3/720/big_buck_bunny_720p_1mb.mp3',
+            duration: '00:01:23',
+            size: '0.8MB'
+        });
+    }, 2000);
+});
+
+// Start server
+app.listen(port, () => {
+    console.log(`APL AI server running on http://localhost:${port}`);
+});
