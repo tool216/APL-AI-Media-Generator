@@ -15,7 +15,7 @@ VOICE_MAPPING = {
 
 @app.route('/generate_audio', methods=['POST'])
 def generate_audio():
-    data = request.json
+    data = request.audio_service.py
     text = data.get('text')
     voice = data.get('voice', 'male1')
     
